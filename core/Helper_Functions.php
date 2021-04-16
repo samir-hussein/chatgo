@@ -58,12 +58,20 @@ function title(string $title)
 
 function assets(string $path)
 {
-    echo "/assets/$path";
+    if (strpos($_SERVER['DOCUMENT_ROOT'], 'public') !== false) {
+        echo "assets/$path";
+    } else {
+        echo "public/assets/$path";
+    }
 }
 
 function public_path(string $path)
 {
-    echo "/$path";
+    if (strpos($_SERVER['DOCUMENT_ROOT'], 'public') !== false) {
+        echo "$path";
+    } else {
+        echo "public/$path";
+    }
 }
 
 function middleware(string $name)

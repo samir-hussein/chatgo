@@ -17,7 +17,7 @@ use App\Auth;
 <div class="container-fluid h-100">
     <div id="logoutDiv" class="d-flex justify-content-between">
         <a id="logout" href="/my-profile"><button class="btn btn-primary">
-                <img src="assets/images/<?= Auth::user()->image ?>" class="rounded-circle my_img_msg">
+                <img src="<?= assets("images/") . Auth::user()->image ?>" class="rounded-circle my_img_msg">
                 <?= htmlspecialchars(Auth::user()->name) ?>
             </button></a>
         <a id="logout" href="/logout"><button class="btn btn-danger">Logout</button></a>
@@ -41,7 +41,7 @@ use App\Auth;
     <div class="row justify-content-center h-100">
         <div class="col-md-4 col-xl-3 chat">
             <div class="card mb-sm-3 mb-md-0 contacts_card">
-                <div id="chat-head-search">
+                <div id="chat-head-search" style="overflow-y: auto;">
                     <form method="post" action="" id="search-form">
                         <div class="card-header">
                             <div class="input-group">
