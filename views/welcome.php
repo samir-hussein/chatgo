@@ -100,12 +100,13 @@ use App\Auth;
                     <img style="display:block;margin:auto;margin-top:10%" class="uk-border-circle" src="<?= assets("images/android-chrome-192x192.png") ?>" width="170" height="170" alt="Border circle">
                     <p style='text-align:center;font-size:25px'>Welcome In Chat Go <br> Choose Chat To Display</p>
                 </div>
+                <progress id="js-progressbar" class="uk-progress" value="0" max="100" style="display:none"></progress>
                 <div class="card-footer" style="display:none">
                     <form id="send_msg" method="POST" enctype="multipart/form-data" action="/send_msg">
                         <div class="input-group">
                             <input type="text" name="chat_id" id="chat_id" hidden>
                             <input type="text" name="user_id" id="user_id" hidden>
-                            <input id="file" name="files[]" type="file" multiple hidden accept="image/*" />
+                            <input id="file" name="files[]" type="file" multiple hidden />
                             <div class="input-group-append">
                                 <span id="span_file" class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span>
                                 <span id="span_emoji" class="input-group-text">&#128512</span>
@@ -152,6 +153,8 @@ use App\Auth;
     </ul>
 </div>
 
+<!-- <a href="/download/607c390fac564/test/pdf">test.pdf</a> -->
+
 <?php endSession("content") ?>
 
 <?php startSession('scripts') ?>
@@ -161,6 +164,10 @@ use App\Auth;
 
 
 <script>
+    $("#file").change(function() {
+        $("#send_msg").submit();
+    });
+    // create emojis box ----------------------------------------
     for (let i = 129296; i < 129326; i++) {
         $(".emojis").prepend("<li class='emojiIcon'>&#" + i + "</li>");
     }
@@ -190,6 +197,7 @@ use App\Auth;
         var menu = document.getElementById("emojiList");
         menu.style.display = 'none'
     })
+    // @end emojis -----------------------------------------------
 
     var execute = 0;
     $(document).on('click', '.delete_msg', function(e) {
@@ -240,35 +248,6 @@ use App\Auth;
         var menu = document.getElementById("menu")
         menu.style.display = 'none';
         execute = 0;
-    })
-
-    $("#file").change(function(e) {
-        e.preventDefault();
-        var form_data = new FormData(document.getElementById("send_msg"));
-        $.ajax({
-            type: "POST",
-            url: "/display",
-            dataType: "JSON",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-            success: function(response) {
-                $("#list-images").html(response.images);
-                $("#controllers").html(response.controllers);
-                $("#displayImages").show();
-            }
-        })
-    })
-
-    document.addEventListener("keydown", function(event) {
-        if (event.which == 27) {
-            $("#displayImages").hide(500);
-        }
-    })
-
-    $("#close").click(function() {
-        $("#displayImages").hide(500);
     })
 
     $(window).on('unload', function() {
@@ -409,23 +388,58 @@ use App\Auth;
         e.preventDefault();
         $("#emojiList").css('display', 'none');
         var form_data = new FormData(this);
-        $.ajax({
-            type: "POST",
-            url: "/send_msg",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-            success: function(response) {
-                if (response != "error") {
-                    $("#chat_id").val(response);
-                    $("#msg").val('');
-                    $("#file").val('');
-                    reloadChat(true);
-                    allChat();
+
+        if ($("#file").val() != '') {
+            $("#file").val('');
+            $(".uk-progress").show();
+            $.ajax({
+                xhr: function() {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function(evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = ((evt.loaded / evt.total) * 100);
+                            console.log(percentComplete);
+                            $(".uk-progress").val(percentComplete);
+                        }
+                    }, false);
+                    return xhr;
+                },
+                type: "POST",
+                url: "/send_file",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    console.log(response);
+                    if (response != "error") {
+                        $(".uk-progress").hide();
+                        $("#chat_id").val(response);
+                        $("#file").val('');
+                        reloadChat(true);
+                        allChat();
+                    }
                 }
-            }
-        })
+            })
+        } else {
+            $.ajax({
+                type: "POST",
+                url: "/send_msg",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    console.log(response);
+                    if (response != "error") {
+                        $("#chat_id").val(response);
+                        $("#msg").val('');
+                        reloadChat(true);
+                        allChat();
+                    }
+                }
+            })
+        }
     })
 
     $(document).on("click", ".chat_head", function() {

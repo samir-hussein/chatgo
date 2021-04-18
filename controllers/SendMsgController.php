@@ -3,13 +3,14 @@
 namespace Controllers;
 
 use App\Auth;
+use App\Validation;
 use App\Validatore;
 use Models\ChatModel;
 use Models\MessageModel;
 
 class SendMsgController
 {
-    public function send($request)
+    public function msg($request)
     {
         $validate = Validatore::make([
             'chat_id' => 'required',
@@ -48,5 +49,13 @@ class SendMsgController
 
             echo $newChat[0]->id;
         }
+    }
+
+    public function file($request)
+    {
+        $allowedExt = array('jpg', 'png', 'jpeg', 'gif', 'webp', 'mp4', 'mp3', 'avi', 'pdf', 'doc', 'docx', 'webm', 'mkv', 'xls', 'xlsx', 'txt');
+        $arr = Validation::files('files', 1000000000, $allowedExt, 'assets/chatUploads/');
+
+        var_dump($arr);
     }
 }

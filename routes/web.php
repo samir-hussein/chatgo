@@ -52,7 +52,8 @@ Route::middleware('auth')->post('/allChat', 'Controllers\AllChatController@AllCh
 
 Route::middleware('auth')->post('/loadChat', 'Controllers\LoadChatController@loadChat');
 
-Route::middleware('auth')->post('/send_msg', 'Controllers\SendMsgController@send');
+Route::middleware('auth')->post('/send_msg', 'Controllers\SendMsgController@msg');
+Route::middleware('auth')->post('/send_file', 'Controllers\SendMsgController@file');
 
 Route::middleware('auth')->post('/delete_chat', 'Controllers\DeleteController@deleteChat');
 Route::middleware('auth')->post('/delete_msg_for_me', 'Controllers\DeleteController@deleteForMe');
@@ -64,5 +65,10 @@ Route::middleware('auth')->get('/profile/{id}', 'Controllers\ProfileController@i
 
 Route::middleware('auth')->post('/type-status/{chat_id}', 'Controllers\TypeStatusController@focus');
 Route::middleware('auth')->post('/type-status', 'Controllers\TypeStatusController@focusout');
+
+Route::get('/download/{filename}/{downloadname}/{ext}', function ($filename, $downloadname, $ext) {
+    header('Content-Disposition: attachment; filename="' . $downloadname . '.' . $ext . '"');
+    readfile('assets/chatUploads/' . $filename . '.' . $ext);
+});
 
 Route::post('/display', 'Controllers\DisplayController@display');

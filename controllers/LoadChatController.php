@@ -56,7 +56,7 @@ class LoadChatController
                 } else {
                     $body .= '<div class="d-flex justify-content-start mb-4">';
 
-                    if ($i == 2 || ($i > 2 && $response[$i - 1]->from_user == Auth::user()->id)) {
+                    if ($i == 1 || ($i > 1 && $response[$i - 1]->from_user == Auth::user()->id)) {
                         $body .= '<div class="img_cont_msg"><img src="assets/images/' . $response[0]->image . '" class="rounded-circle user_img_msg"></div>';
                     }
 
