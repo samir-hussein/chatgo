@@ -62,4 +62,7 @@ Route::middleware('auth')->get('/block/{id}', 'Controllers\BlockController@block
 
 Route::middleware('auth')->get('/profile/{id}', 'Controllers\ProfileController@index');
 
+Route::middleware('auth')->post('/type-status/{chat_id}', 'Controllers\TypeStatusController@focus');
+Route::middleware('auth')->post('/type-status', 'Controllers\TypeStatusController@focusout');
+
 Route::post('/display', 'Controllers\DisplayController@display');

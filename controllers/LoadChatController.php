@@ -28,7 +28,7 @@ class LoadChatController
         }
 
         $myPhoto = Session::get('image');
-        $user2Photo = DataBase::prepare("SELECT id,name,status,image,only_me FROM users WHERE id=" . $request->userId);
+        $user2Photo = DataBase::prepare("SELECT id,name,status,image,only_me,is_type FROM users WHERE id=" . $request->userId);
 
         if ($response != null) {
             $response = array_merge($user2Photo, ($response) ?? []);
@@ -100,6 +100,10 @@ class LoadChatController
             $block_status = '';
         }
 
+        if ($chatModel && $chatModel->block != 'yes' && !is_null($response[0]->is_type) && $response[0]->is_type == $request->chatId) {
+            $body .= '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="assets/images/' . $response[0]->image . '" class="rounded-circle user_img_msg"></div><div class="msg_cotainer" style="white-space:pre" dir="auto">typing...<span class="msg_time" style="width:50px" dir="auto"></span></div></div>';
+        }
+
         if ($chatModel && $chatModel->block == 'yes') {
             if ($body == null) {
                 $body = '';
@@ -118,7 +122,7 @@ class LoadChatController
         } else {
             $seen = $lastSeen . $response[0]->status;
             $image = $response[0]->image;
-            $listAction = '<li><i class="fas fa-user-circle"></i><a class="profile_link" href="/profile/' . $response[0]->id . '"> View profile</a></li>
+            $listAction = '<li><i class="fas fa-user-circle"></i><a class="profile_link profile_link_button" href="/profile/' . $response[0]->id . '"> View profile</a></li>
             <li><i class="fas fa-plus"></i> Add to group</li>';
         }
 

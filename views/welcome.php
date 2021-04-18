@@ -311,7 +311,10 @@ use App\Auth;
                     var active;
                     var display;
                     for (let index = 0; index < result.length; index++) {
-                        if (result[index].status == "Active now") {
+                        if (result[index].status == "typing...") {
+                            status = '';
+                            active = 'typing...'
+                        } else if (result[index].status == "Active now") {
                             status = '';
                             active = 'online'
                         } else {
@@ -521,7 +524,7 @@ use App\Auth;
         })
     })
 
-    $(document).on('click', '.profile_link', function(e) {
+    $(document).on('click', '.profile_link_button', function(e) {
         e.preventDefault();
         $.ajax({
             type: "GET",
@@ -550,6 +553,36 @@ use App\Auth;
         $("#close-user-profile").click(function() {
             $("#chat-head-search").show(1000);
             $("#user-profile").hide(500);
+        })
+    })
+
+    $("#msg").on("keyup", function() {
+        if ($(this).val().trim() != "") {
+            $.ajax({
+                type: "POST",
+                url: "/type-status/" + $("#chat_id").val()
+            })
+        } else {
+            $.ajax({
+                type: "POST",
+                url: "/type-status"
+            })
+        }
+    })
+
+    $("#msg").on("focus", function() {
+        if ($(this).val().trim() != "") {
+            $.ajax({
+                type: "POST",
+                url: "/type-status/" + $("#chat_id").val()
+            })
+        }
+    })
+
+    $("#msg").on("focusout", function() {
+        $.ajax({
+            type: "POST",
+            url: "/type-status"
         })
     })
 </script>
