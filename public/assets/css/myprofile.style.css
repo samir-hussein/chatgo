@@ -75,11 +75,8 @@ main {
     color: #0062cc;
 }
 
-#info {
-    margin-bottom: 30%;
-}
-
-#onlyMe {
+#onlyMe,
+#lastSeen_onlyMe {
     border: none;
     outline: none;
     font-weight: 600;
@@ -97,7 +94,8 @@ main {
     font-weight: bold;
 }
 
-#onlyMe span {
+#onlyMe span,
+#lastSeen_onlyMe span {
     margin-left: 1%;
 }
 

@@ -42,7 +42,7 @@ class AllChatController
                 if (!is_null($check) || is_null($time)) {
                     $to_user = MessageModel::where(['chat_id', '=', $result[$i]['chat_id']])->orderBy('id', 'desc')->get(['to_user']);
                     $msgNum = MessageModel::where(['chat_id', '=', $result[$i]['chat_id']])->where(['status', '=', 'unread'])->countRows();
-                    $res = DataBase::prepare("SELECT id,name,email,phone,status,image,is_type,is_recording FROM users WHERE (id = " . $chat->user1 . " OR id = " . $chat->user2 . ") AND id != $me");
+                    $res = DataBase::prepare("SELECT id,name,email,phone,status,image,is_type,is_recording,lastSeen_onlyMe FROM users WHERE (id = " . $chat->user1 . " OR id = " . $chat->user2 . ") AND id != $me");
 
                     if (!is_null($res[0]->is_type) && $res[0]->is_type == $chat->id) {
                         $res[0] = addProperty($res[0], 'status', 'typing...');

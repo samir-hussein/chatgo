@@ -174,6 +174,10 @@ function allChat() {
                         var image = result[index].image;
                     }
 
+                    if (result[index].lastSeen_onlyMe == 'yes') {
+                        active = '';
+                    }
+
                     if (result[index].msgNum > 0 && result[index].to_user == myId) {
                         display = 'block';
                     } else {

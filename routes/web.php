@@ -31,6 +31,7 @@ Route::post('/create-user', 'Controllers\RegisterController@create');
 Route::middleware('auth')->get('/my-profile', 'Controllers\ProfileController@myProfile');
 
 Route::middleware('auth')->post('/change-only-me', 'Controllers\ChangeInfoController@onlyMe');
+Route::middleware('auth')->post('/change-lastSeen_onlyMe', 'Controllers\ChangeInfoController@lastSeen_onlyMe');
 
 Route::middleware('auth')->post('/change-pio', 'Controllers\ChangeInfoController@pio');
 
@@ -75,5 +76,3 @@ Route::get('/download/{filename}/{downloadname}/{ext}', function ($filename, $do
     header('Content-Disposition: attachment; filename="' . $downloadname . '.' . $ext . '"');
     readfile('assets/chatUploads/' . $filename . '.' . $ext);
 });
-
-Route::post('/display', 'Controllers\DisplayController@display');

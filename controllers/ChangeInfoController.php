@@ -24,6 +24,19 @@ class ChangeInfoController
         }
     }
 
+    public function lastSeen_onlyMe($request)
+    {
+        UserModel::where(['id', '=', Auth::user()->id])->update([
+            'lastSeen_onlyMe' => $request->lastSeen_onlyMe
+        ]);
+
+        if ($request->lastSeen_onlyMe == 'yes') {
+            echo 'lock';
+        } else {
+            echo 'unlock';
+        }
+    }
+
     public function pio($request)
     {
         if (empty(trim($request->pio))) {

@@ -38,11 +38,16 @@ class ProfileController
 
     public function myProfile()
     {
-        $user = UserModel::where(['id', '=', Auth::user()->id])->get(['image', 'phone', 'about', 'name', 'email', 'only_me'])[0];
+        $user = UserModel::where(['id', '=', Auth::user()->id])->get(['image', 'phone', 'about', 'name', 'email', 'only_me', 'lastSeen_onlyMe'])[0];
         if ($user->only_me == 'yes') {
             $only_me = 'lock';
         } else {
             $only_me = 'unlock';
+        }
+        if ($user->lastSeen_onlyMe == 'yes') {
+            $lastSeen_onlyMe = 'lock';
+        } else {
+            $lastSeen_onlyMe = 'unlock';
         }
         $userInfo = [
             'id' => Auth::user()->id,
@@ -52,6 +57,7 @@ class ProfileController
             'phone' => $user->phone,
             'about' => $user->about,
             'only_me' => $only_me,
+            'lastSeen_onlyMe' => $lastSeen_onlyMe,
         ];
 
         return view('myprofile', $userInfo);
