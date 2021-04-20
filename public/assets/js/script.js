@@ -410,10 +410,14 @@ function reloadChat(scroll = null, listAction = null) {
 }
 
 // run reloadchat function and allchat function every 1 sec
-setInterval(function() {
-    reloadChat();
-    allChat();
-}, 1000);
+function reload() {
+    setTimeout(function() {
+        reloadChat();
+        allChat();
+        reload();
+    }, 1000);
+}
+reload();
 
 // block user
 $(document).on("click", ".block_link", function(e) {
