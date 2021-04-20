@@ -13,6 +13,7 @@ class LoadChatController
 {
     public function loadChat($request)
     {
+
         $time = null;
         $chatModel = ChatModel::find($request->chatId);
         if ($chatModel && $chatModel->deleted_from1 == Auth::id()) {
@@ -28,7 +29,7 @@ class LoadChatController
         }
 
         $myPhoto = Session::get('image');
-        $user2Photo = DataBase::prepare("SELECT id,name,status,image,only_me,is_type FROM users WHERE id=" . $request->userId);
+        $user2Photo = DataBase::prepare("SELECT id,name,status,image,only_me,is_type,is_recording FROM users WHERE id=" . $request->userId);
 
         if ($response != null) {
             $response = array_merge($user2Photo, ($response) ?? []);
@@ -39,14 +40,44 @@ class LoadChatController
             }
             $body = '';
             for ($i = 1; $i < count($response); $i++) {
-                $msg = decryptMessage($response[$i]->body, utf8_decode($response[$i]->c2), utf8_decode($response[$i]->c1), utf8_decode($response[$i]->c3));
-                if ($response[$i]->from_user ==  Auth::user()->id) {
-                    if ($response[$i]->status == 'read') {
-                        $color = 'color:#20c997';
+                if (!is_null($response[$i]->body)) {
+                    $msg = decryptMessage($response[$i]->body, utf8_decode($response[$i]->c2), utf8_decode($response[$i]->c1), utf8_decode($response[$i]->c3));
+
+                    $msg = '<div class="msg_cotainer_send" style="white-space:pre;" dir="auto">' . htmlspecialchars($msg);
+                } elseif (!is_null($response[$i]->files)) {
+                    $file = $response[$i]->files;
+                    $oldName = $response[$i]->oldName;
+                    $arrOldName = explode('.', $oldName);
+                    $arr = explode('.', $file);
+                    $fileName = $arr[0];
+                    $ext = end($arr);
+                    $imageExt = array('jpg', 'png', 'jpeg', 'gif', 'webp');
+                    $videoExt = array('webm', 'mkv', 'mp4', 'avi');
+                    $audioExt = array('mp3', 'm4a', 'oga', 'ogg', 'ogv', 'aac', 'wav');
+                    if (in_array($ext, $imageExt)) {
+                        $msg = '
+                        <div class="img_cotainer_send" dir="auto">
+                                <img style="display:block;margin:auto;cursor:pointer" width="200" height="200" src="assets/chatUploads/' . $file . '" class="chat_img">
+                            ';
+                    } elseif (in_array($ext, $videoExt)) {
+                        $msg = '
+                        <div class="img_cotainer_send" dir="auto">
+                                <img style="display:block;margin:auto;cursor:pointer" width="200" height="200" src="assets/images/video_icon.webp" class="chat_video" data-src="' . $file . '">
+                            ';
+                    } elseif (in_array($ext, $audioExt)) {
+                        $msg = '
+                        <div class="img_cotainer_send" dir="auto">
+                                <img style="display:block;margin:auto;cursor:pointer;height: 50px;" width="50" src="assets/images/audio_icon.png" class="chat_video" data-src="' . $file . '">
+                            ';
                     } else {
-                        $color = '';
+                        $msg = '<div class="msg_cotainer_send" style="white-space:pre;" dir="auto">' . "<a href='/download/$fileName/$arrOldName[0]/$ext'>$oldName</a>";
                     }
-                    $body .= '<div class="d-flex justify-content-end mb-4"><i class="delete_msg fas fa-trash" data-id="' . $response[$i]->id . '" data-status="' . $response[$i]->status . '" data-to="' . $response[$i]->to_user . '"></i><div class="msg_cotainer_send" style="white-space:pre;" dir="auto">' . htmlspecialchars($msg) . '<span style="width:50px" class="msg_time_send" dir="auto">' . date('h:i a', strtotime($response[$i]->time)) . '<span style="' . $color . '" class="uk-margin-small-right" uk-icon="check"></span></span></div>';
+                }
+
+                if ($response[$i]->from_user ==  Auth::user()->id) {
+                    $color = ($response[$i]->status == 'read') ? 'color:#20c997' : '';
+
+                    $body .= '<div class="d-flex justify-content-end mb-4"><i class="delete_msg fas fa-trash" data-id="' . $response[$i]->id . '" data-status="' . $response[$i]->status . '" data-to="' . $response[$i]->to_user . '"></i>' . $msg . '<span class="msg_time_send" dir="auto">' . date('h:i a', strtotime($response[$i]->time)) . '<span style="' . $color . '" class="uk-margin-small-right" uk-icon="check"></span></span></div>';
 
                     if ($i == 1 || ($i > 1 && $response[$i - 1]->from_user != Auth::user()->id)) {
                         $body .= '<div class="img_cont_msg"><img src="assets/images/' . $myPhoto . '" class="rounded-circle user_img_msg"></div>';
@@ -60,7 +91,7 @@ class LoadChatController
                         $body .= '<div class="img_cont_msg"><img src="assets/images/' . $response[0]->image . '" class="rounded-circle user_img_msg"></div>';
                     }
 
-                    $body .= '<div class="msg_cotainer" style="white-space:pre" dir="auto">' . htmlspecialchars($msg) . '<span class="msg_time" style="width:50px" dir="auto">' . date('h:i a', strtotime($response[$i]->time)) . '</span></div><i class="other_msg fas fa-trash delete_msg" data-id="' . $response[$i]->id . '" data-status="' . $response[$i]->status . '" data-to="' . $response[$i]->to_user . '"></i></div>';
+                    $body .= str_replace('cotainer_send', 'cotainer', $msg)  . '<span class="msg_time" dir="auto">' . date('h:i a', strtotime($response[$i]->time)) . '</span></div><i class="other_msg fas fa-trash delete_msg" data-id="' . $response[$i]->id . '" data-status="' . $response[$i]->status . '" data-to="' . $response[$i]->to_user . '"></i></div>';
                 }
             }
         } else {
@@ -104,6 +135,10 @@ class LoadChatController
             $body .= '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="assets/images/' . $response[0]->image . '" class="rounded-circle user_img_msg"></div><div class="msg_cotainer" style="white-space:pre" dir="auto">typing...<span class="msg_time" style="width:50px" dir="auto"></span></div></div>';
         }
 
+        if ($chatModel && $chatModel->block != 'yes' && !is_null($response[0]->is_recording) && $response[0]->is_recording == $request->chatId) {
+            $body .= '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="assets/images/' . $response[0]->image . '" class="rounded-circle user_img_msg"></div><div class="msg_cotainer" style="white-space:pre" dir="auto">recording...<span class="msg_time" style="width:50px" dir="auto"></span></div></div>';
+        }
+
         if ($chatModel && $chatModel->block == 'yes') {
             if ($body == null) {
                 $body = '';
@@ -132,7 +167,7 @@ class LoadChatController
                         <img src="/assets/images/' . $image . '" class="rounded-circle user_img">
                         <span class="online_icon ' . $status . '"></span>
                     </div>
-                    <a class="profile_link" ' . $href . '>
+                    <a class="profile_link profile_link_button" ' . $href . '>
                         <div class="user_info">
                             <span>' . htmlspecialchars($response[0]->name) . '</span>
                             <p>' . $seen . '</p>

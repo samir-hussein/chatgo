@@ -36,6 +36,9 @@ class DeleteController
                     'deleted_from' => Auth::id(),
                 ]);
             } elseif ($msg && !is_null($msg->deleted_from) && $msg->deleted_from != Auth::id() && ($msg->from_user == Auth::id() || $msg->to_user == Auth::id())) {
+                if (!is_null($msg->files)) {
+                    unlink("../public/assets/chatUploads/{$msg->files}");
+                }
                 MessageModel::where(['id', '=', $request->msg_id])->delete();
             }
         }
@@ -46,6 +49,9 @@ class DeleteController
         if (isset($request->msg_id)) {
             $msg = MessageModel::find($request->msg_id);
             if ($msg && $msg->status == 'unread' && $msg->from_user == Auth::id()) {
+                if (!is_null($msg->files)) {
+                    unlink("../public/assets/chatUploads/{$msg->files}");
+                }
                 MessageModel::where(['id', '=', $request->msg_id])->delete();
             }
         }

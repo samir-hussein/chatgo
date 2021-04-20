@@ -24,4 +24,20 @@ class TypeStatusController
             'is_type' => null
         ]);
     }
+
+    public function startRecord($chat_id)
+    {
+        $check = ChatModel::find($chat_id);
+        if ($check) {
+            UserModel::where(['id', '=', Auth::id()])->update([
+                'is_recording' => $chat_id
+            ]);
+        }
+    }
+    public function stopRecord()
+    {
+        UserModel::where(['id', '=', Auth::id()])->update([
+            'is_recording' => null
+        ]);
+    }
 }

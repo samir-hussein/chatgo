@@ -199,18 +199,38 @@ html {
     position: relative;
 }
 
+.img_cotainer_send {
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: 10px;
+    border-radius: 25px;
+    background-color: #fff;
+    position: relative;
+}
+
+.img_cotainer {
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 10px;
+    border-radius: 25px;
+    background-color: #fff;
+    position: relative;
+}
+
 .msg_time {
     position: absolute;
     left: 0;
+    width: 50px;
     bottom: -15px;
     color: rgba(255, 255, 255, 0.5);
     font-size: 10px;
 }
 
 .msg_time_send {
+    width: 72px;
     position: absolute;
     right: 0;
-    bottom: -15px;
+    bottom: -18px;
     color: rgba(255, 255, 255, 0.5);
     font-size: 10px;
 }

@@ -51,9 +51,11 @@ Route::post('/search', 'Controllers\SearchController@search');
 Route::middleware('auth')->post('/allChat', 'Controllers\AllChatController@AllChat');
 
 Route::middleware('auth')->post('/loadChat', 'Controllers\LoadChatController@loadChat');
+Route::middleware('auth')->post('/reloadChat', 'Controllers\ReloadChatController@reloadChat');
 
 Route::middleware('auth')->post('/send_msg', 'Controllers\SendMsgController@msg');
 Route::middleware('auth')->post('/send_file', 'Controllers\SendMsgController@file');
+Route::middleware('auth')->post('/send_record', 'Controllers\SendMsgController@record');
 
 Route::middleware('auth')->post('/delete_chat', 'Controllers\DeleteController@deleteChat');
 Route::middleware('auth')->post('/delete_msg_for_me', 'Controllers\DeleteController@deleteForMe');
@@ -65,6 +67,9 @@ Route::middleware('auth')->get('/profile/{id}', 'Controllers\ProfileController@i
 
 Route::middleware('auth')->post('/type-status/{chat_id}', 'Controllers\TypeStatusController@focus');
 Route::middleware('auth')->post('/type-status', 'Controllers\TypeStatusController@focusout');
+
+Route::middleware('auth')->post('/record-status/{chat_id}', 'Controllers\TypeStatusController@startRecord');
+Route::middleware('auth')->post('/record-status', 'Controllers\TypeStatusController@stopRecord');
 
 Route::get('/download/{filename}/{downloadname}/{ext}', function ($filename, $downloadname, $ext) {
     header('Content-Disposition: attachment; filename="' . $downloadname . '.' . $ext . '"');

@@ -15,33 +15,34 @@ use App\Auth;
 <?php startSession('content') ?>
 
 <div class="container-fluid h-100">
+
     <div id="logoutDiv" class="d-flex justify-content-between">
+        <!-- my profile button -->
         <a id="logout" href="/my-profile"><button class="btn btn-primary">
                 <img src="<?= assets("images/") . Auth::user()->image ?>" class="rounded-circle my_img_msg">
                 <?= htmlspecialchars(Auth::user()->name) ?>
             </button></a>
+        <!-- logout button -->
         <a id="logout" href="/logout"><button class="btn btn-danger">Logout</button></a>
     </div>
+
+    <!-- lightbox to display images, videos and recordes from chat -->
     <div id="displayImages" class="uk-box-shadow-large">
+        <!-- close lightbox button -->
         <button id="close" type="button" uk-close class="uk-close-large"></button>
-        <div class="uk-position-relative mt-3" uk-slideshow="ratio: 7:3;animation: fade">
-
-            <ul class="uk-slideshow-items" id="list-images">
-
-            </ul>
-
-            <div class="uk-position-bottom-center uk-position-small">
-                <ul class="uk-thumbnav" id="controllers">
-                </ul>
-            </div>
-
-        </div>
-        <button id="send_test" type="button" class="btn w-25 ml-auto mr-auto mt-2 d-block btn-success text-uppercase font-weight-bold">send</button>
+        <!-- to display images -->
+        <img id="chatImg" style="display:none;margin:auto;width:90%;height:100%">
+        <!-- to display videos -->
+        <video id="chatVideo" autoplay controls style="display:none;margin:auto;width:90%;max-height:100%"></video>
+        <!-- to display audios -->
+        <audio id="chatAudio" controls autoplay style="display:none;margin:auto"></audio>
     </div>
+
     <div class="row justify-content-center h-100">
         <div class="col-md-4 col-xl-3 chat">
             <div class="card mb-sm-3 mb-md-0 contacts_card">
                 <div id="chat-head-search" style="overflow-y: auto;">
+                    <!-- search form -->
                     <form method="post" action="" id="search-form">
                         <div class="card-header">
                             <div class="input-group">
@@ -101,6 +102,7 @@ use App\Auth;
                     <p style='text-align:center;font-size:25px'>Welcome In Chat Go <br> Choose Chat To Display</p>
                 </div>
                 <progress id="js-progressbar" class="uk-progress" value="0" max="100" style="display:none"></progress>
+                <div id="counter" style="display:none;margin:auto"><span id="min">00</span>:<span id="sec">00</span></div>
                 <div class="card-footer" style="display:none">
                     <form id="send_msg" method="POST" enctype="multipart/form-data" action="/send_msg">
                         <div class="input-group">
@@ -112,8 +114,11 @@ use App\Auth;
                                 <span id="span_emoji" class="input-group-text">&#128512</span>
                             </div>
                             <textarea style="resize: none" dir="auto" id="msg" name="msg" class="form-control type_msg" placeholder="Type your message..."></textarea>
-                            <div class="input-group-append">
+                            <div class="input-group-append" id="buttons">
                                 <button type="submit" class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></button>
+                                <button id="start_record" type="button" class="input-group-text" style="cursor:pointer"><i class="fas fa-microphone"></i></button>
+                                <button id="cancel_record" type="button" class="input-group-text" style="cursor:pointer;display:none"><i class="fas fa-times"></i></button>
+                                <button id="send_record" type="button" class="input-group-text" style="cursor:pointer;display:none"><i class="fas fa-share"></i></button>
                             </div>
                         </div>
                     </form>
@@ -150,10 +155,11 @@ use App\Auth;
         <li class='emojiIcon'>&#128222</li>
         <li class='emojiIcon'>&#128286</li>
         <li class='emojiIcon'>&#129335</li>
+        <li class='emojiIcon'>&#128175</li>
     </ul>
 </div>
 
-<!-- <a href="/download/607c390fac564/test/pdf">test.pdf</a> -->
+<input type="text" id="myId" value="<?= Auth::id() ?>" hidden>
 
 <?php endSession("content") ?>
 
@@ -161,444 +167,8 @@ use App\Auth;
 
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.js"></script>
-
-
-<script>
-    $("#file").change(function() {
-        $("#send_msg").submit();
-    });
-    // create emojis box ----------------------------------------
-    for (let i = 129296; i < 129326; i++) {
-        $(".emojis").prepend("<li class='emojiIcon'>&#" + i + "</li>");
-    }
-
-    for (let i = 128588; i >= 128512; i--) {
-        $(".emojis").prepend("<li class='emojiIcon'>&#" + i + "</li>");
-    }
-
-    for (let i = 128068; i < 128080; i++) {
-        $(".emojis").append("<li class='emojiIcon'>&#" + i + "</li>");
-    }
-
-    for (let i = 128147; i < 128159; i++) {
-        $(".emojis").append("<li class='emojiIcon'>&#" + i + "</li>");
-    }
-
-    $(document).on('click', '.emojiIcon', function() {
-        var input = $("#msg").val();
-        $("#msg").val(input + $(this).text().trim());
-    })
-
-    $(document).on("click", '#span_emoji', function(e) {
-        $("#emojiList").toggle();
-    })
-
-    $("#msg").on("focus", function() {
-        var menu = document.getElementById("emojiList");
-        menu.style.display = 'none'
-    })
-    // @end emojis -----------------------------------------------
-
-    var execute = 0;
-    $(document).on('click', '.delete_msg', function(e) {
-        var msg_id = $(this).attr('data-id');
-        var msg_to = $(this).attr('data-to');
-        var msg_status = $(this).attr('data-status');
-        var menu = document.getElementById("menu")
-        menu.style.display = 'block';
-        menu.style.left = e.pageX + "px";
-        menu.style.top = e.pageY + "px";
-
-        if (msg_status == 'read' || msg_to == "<?= Auth::id() ?>") {
-            $("#everyone_button").hide();
-        } else {
-            $("#everyone_button").show();
-        }
-
-        $('#menu').attr('data-id', msg_id);
-        $('#menu').on('click', function(e) {
-            if (execute == 0) {
-                execute = 1;
-                var choose = e.target.innerHTML;
-                if (choose == 'Delete For Me') {
-                    $.ajax({
-                        type: "POST",
-                        url: "/delete_msg_for_me",
-                        data: {
-                            msg_id: $(this).attr('data-id')
-                        },
-                        success: function(response) {
-
-                        }
-                    })
-                } else if (choose == 'Delete For Everyone') {
-                    $.ajax({
-                        type: "POST",
-                        url: "/delete_msg_for_everyone",
-                        data: {
-                            msg_id: $(this).attr('data-id')
-                        }
-                    })
-                }
-            }
-        })
-    });
-
-    $('body').on('click', function() {
-        var menu = document.getElementById("menu")
-        menu.style.display = 'none';
-        execute = 0;
-    })
-
-    $(window).on('unload', function() {
-        $.ajax({
-            url: "/closeBrowser",
-            type: "GET"
-        });
-    })
-
-    $(document).on('click', '.delete_link', function(e) {
-        e.preventDefault();
-        if (confirm("Are you sure you want to delete this chat?")) {
-            $.ajax({
-                type: "POST",
-                url: "/delete_chat",
-                data: {
-                    chat_id: $("#chat_id").val(),
-                }
-            })
-        }
-    })
-
-    $(document).ready(function() {
-        $('#action_menu_btn').click(function() {
-            $('.action_menu').toggle();
-        });
-    });
-
-    function allChat() {
-        $.ajax({
-            type: "POST",
-            url: "/allChat",
-            dataType: "JSON",
-            success: function(result) {
-                if (result == "no result") {
-                    $(".allChat").html("<p style='text-align: center;font-size:23px'>No Chat Avilable</p>");
-                } else {
-                    var data = '';
-                    var status;
-                    var active;
-                    var display;
-                    for (let index = 0; index < result.length; index++) {
-                        if (result[index].status == "typing...") {
-                            status = '';
-                            active = 'typing...'
-                        } else if (result[index].status == "Active now") {
-                            status = '';
-                            active = 'online'
-                        } else {
-                            status = 'offline';
-                            active = 'offline';
-                        }
-                        if (result[index].block == 'yes') {
-                            status = 'offline';
-                            active = '';
-                            var image = 'Blank-Avatar.png';
-                        } else {
-                            active = '<p>' + result[index].name + ' is ' + active + '</p>';
-                            var image = result[index].image;
-                        }
-                        if (result[index].msgNum > 0 && result[index].to_user == <?= Auth::user()->id ?>) {
-                            display = 'block';
-                        } else {
-                            display = 'none';
-                        }
-                        data += '<li data-userId="' + result[index].id + '" data-chatId="' + result[index].chat_id + '" class="chat_head"><div class="d-flex bd-highlight"><div class="img_cont"><img src="/assets/images/' + image + '" class="rounded-circle user_img"><span class="online_icon ' + status + '"></span></div><div class="user_info"><span>' + result[index].name + '</span>' + active + '</div><span style="display:' + display + '" class="uk-badge">' + result[index].msgNum + '</span></div></li>';
-                    }
-                    $(".allChat").html(data);
-                    var user_id = $('#user_id').val();
-                    $("li[data-userId='" + user_id + "']").addClass("active");
-                }
-            }
-        })
-    }
-    allChat();
-
-    function search() {
-        $.ajax({
-            type: "POST",
-            url: "/search",
-            dataType: "JSON",
-            data: {
-                text_search: $("#text_search").val()
-            },
-            success: function(result) {
-                if (result == "no result") {
-                    $(".allChat").css('display', 'block');
-                    $(".searchList").css("display", "none");
-                    allChat();
-                } else {
-                    var data = '';
-                    var status;
-                    var active;
-                    for (let index = 0; index < result.length; index++) {
-                        if (result[index].status == "Active now") {
-                            status = '';
-                            active = 'online';
-                        } else {
-                            status = 'offline';
-                            active = 'offline';
-                        }
-                        if (result[index].block == 'yes') {
-                            status = 'offline';
-                            active = '';
-                            var image = 'Blank-Avatar.png';
-                        } else {
-                            active = '<p>' + result[index].name + ' is ' + active + '</p>';
-                            var image = result[index].image;
-                        }
-                        data += '<li class="chat_head" data-userId="' + result[index].id + '" data-chatId="' + result[index].chat_id + '"><div class="d-flex bd-highlight"><div class="img_cont"><img src="/assets/images/' + image + '" class="rounded-circle user_img"><span class="online_icon ' + status + '"></span></div><div class="user_info"><span>' + result[index].name + '</span>' + active + '</div></div></li>';
-                    }
-                    $(".searchList").html(data);
-                    $(".allChat").css('display', 'none');
-                    $(".searchList").css("display", "block");
-                    var user_id = $('#user_id').val();
-                    $("li[data-userId='" + user_id + "']").addClass("active");
-                }
-            }
-        })
-    }
-
-    $("#search-form").submit(function(e) {
-        e.preventDefault();
-        search();
-    })
-
-    $("#text_search").keyup(function() {
-        search();
-    });
-
-    $(function() {
-        $("#span_file").click(function() {
-            $("#file").trigger("click");
-        });
-    });
-
-    $("#send_msg").submit(function(e) {
-        e.preventDefault();
-        $("#emojiList").css('display', 'none');
-        var form_data = new FormData(this);
-
-        if ($("#file").val() != '') {
-            $("#file").val('');
-            $(".uk-progress").show();
-            $.ajax({
-                xhr: function() {
-                    var xhr = new window.XMLHttpRequest();
-                    xhr.upload.addEventListener("progress", function(evt) {
-                        if (evt.lengthComputable) {
-                            var percentComplete = ((evt.loaded / evt.total) * 100);
-                            console.log(percentComplete);
-                            $(".uk-progress").val(percentComplete);
-                        }
-                    }, false);
-                    return xhr;
-                },
-                type: "POST",
-                url: "/send_file",
-                data: form_data,
-                cache: false,
-                contentType: false,
-                processData: false,
-                success: function(response) {
-                    console.log(response);
-                    if (response != "error") {
-                        $(".uk-progress").hide();
-                        $("#chat_id").val(response);
-                        $("#file").val('');
-                        reloadChat(true);
-                        allChat();
-                    }
-                }
-            })
-        } else {
-            $.ajax({
-                type: "POST",
-                url: "/send_msg",
-                data: form_data,
-                cache: false,
-                contentType: false,
-                processData: false,
-                success: function(response) {
-                    console.log(response);
-                    if (response != "error") {
-                        $("#chat_id").val(response);
-                        $("#msg").val('');
-                        reloadChat(true);
-                        allChat();
-                    }
-                }
-            })
-        }
-    })
-
-    $(document).on("click", ".chat_head", function() {
-        $(".card-footer").css("display", "block");
-        $(".chat_head").removeClass("active");
-        $(this).addClass("active");
-        $.ajax({
-            type: "POST",
-            dataType: "JSON",
-            url: "/loadChat",
-            data: {
-                chatId: $(this).attr("data-chatId"),
-                userId: $(this).attr("data-userId"),
-                click: 'yes'
-            },
-            success: function(result) {
-                $("#head_change").html(result.head_change);
-                $("#head_constant").html(result.head_constant);
-                if (result.body == null) {
-                    $('.msg_card_body').html('');
-                } else {
-                    $('.msg_card_body').html(result.body);
-                }
-                $('#chat_id').val(result.chat_id);
-                $('#user_id').val(result.user_id);
-                $('#block').val(result.block_status);
-                $('#only_me').val(result.only_me);
-                $(".msg_card_body").scrollTop($('.msg_card_body').prop('scrollHeight'));
-                $('#action_menu_btn').click(function() {
-                    $('.action_menu').toggle();
-                });
-            }
-        })
-    })
-
-    function reloadChat(scroll = null, listAction = null) {
-        $.ajax({
-            type: "POST",
-            dataType: "JSON",
-            url: "/loadChat",
-            data: {
-                chatId: $("#chat_id").val(),
-                userId: $("#user_id").val(),
-                reload: 'yes'
-            },
-            success: function(result) {
-                var scrollpos = $(".msg_card_body").scrollTop();
-                var scrollpos = parseInt(scrollpos) + parseInt($(".msg_card_body").height());
-                var scrollHeight = $('.msg_card_body').prop('scrollHeight');
-                $("#head_change").html(result.head_change);
-                if (listAction != null || $("#block").val() != result.block_status || $("#only_me").val() != result.only_me) {
-                    $("#block").val(result.block_status);
-                    $("#only_me").val(result.only_me);
-                    $("#head_constant").html(result.head_constant);
-                    $('#action_menu_btn').click(function() {
-                        $('.action_menu').toggle();
-                    });
-                }
-                if (result.body == null) {
-                    $('.msg_card_body').html('');
-                } else {
-                    $('.msg_card_body').html(result.body);
-                }
-
-                if (!(scrollpos < (scrollHeight - 100)) || scroll != null) {
-                    $(".msg_card_body").scrollTop($('.msg_card_body').prop('scrollHeight'));
-                }
-            }
-        })
-    }
-
-    setInterval(function() {
-        reloadChat();
-        allChat();
-    }, 1000);
-
-    $(document).on("click", ".block_link", function(e) {
-        e.preventDefault();
-        if ($(this).text() == 'unblock') {
-            var unblock = 'true';
-        } else {
-            var unblock = 'false';
-        }
-        $.ajax({
-            type: "GET",
-            url: "/block/" + $("#user_id").val(),
-            data: {
-                unblock: unblock
-            },
-            success: function(data) {
-                $("#chat_id").val(data);
-                reloadChat(true, true);
-                allChat();
-                search();
-            }
-        })
-    })
-
-    $(document).on('click', '.profile_link_button', function(e) {
-        e.preventDefault();
-        $.ajax({
-            type: "GET",
-            url: "/profile/" + $("#user_id").val(),
-            dataType: "JSON",
-            success: function(data) {
-                if (data != "refused") {
-                    $("#name-text").text(data.name);
-                    console.log(data);
-                    if (data.about == "") {
-                        $("#pio-head").hide();
-                    } else {
-                        $("#pio-head").show();
-                        $("#pio-text").text(data.about);
-                    }
-                    $("#email-text").text(data.email);
-                    $("#phone-text").text(data.phone);
-                    $("#image-href").attr("href", "/assets/images/" + data.image);
-                    $("#image-src").attr("src", "/assets/images/" + data.image);
-                    $("#chat-head-search").hide(500);
-                    $("#user-profile").show(1000);
-                }
-            }
-        })
-
-        $("#close-user-profile").click(function() {
-            $("#chat-head-search").show(1000);
-            $("#user-profile").hide(500);
-        })
-    })
-
-    $("#msg").on("keyup", function() {
-        if ($(this).val().trim() != "") {
-            $.ajax({
-                type: "POST",
-                url: "/type-status/" + $("#chat_id").val()
-            })
-        } else {
-            $.ajax({
-                type: "POST",
-                url: "/type-status"
-            })
-        }
-    })
-
-    $("#msg").on("focus", function() {
-        if ($(this).val().trim() != "") {
-            $.ajax({
-                type: "POST",
-                url: "/type-status/" + $("#chat_id").val()
-            })
-        }
-    })
-
-    $("#msg").on("focusout", function() {
-        $.ajax({
-            type: "POST",
-            url: "/type-status"
-        })
-    })
-</script>
+<script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
+<script src="<?= assets('js/record.js') ?>"></script>
+<script src="<?= assets('js/script.js') ?>"></script>
 
 <?php endSession("scripts") ?>
