@@ -1,14 +1,16 @@
 $("#remove-image").click(function() {
-    $.ajax({
-        type: "POST",
-        url: "/remove-image",
-        data: {
-            image: $("#profile-image").attr("src")
-        },
-        success: function(data) {
-            $("#profile-image").attr("src", '/assets/images/' + data);
-        }
-    })
+    if (confirm('Do You Want to Remove Your Image')) {
+        $.ajax({
+            type: "POST",
+            url: "/remove-image",
+            data: {
+                image: $("#profile-image").attr("src")
+            },
+            success: function(data) {
+                $("#profile-image").attr("src", '/assets/images/' + data);
+            }
+        })
+    }
 })
 
 $("#file").change(function(e) {

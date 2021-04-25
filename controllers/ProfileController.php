@@ -38,6 +38,7 @@ class ProfileController
 
     public function myProfile()
     {
+        UserStatus::online();
         $user = UserModel::where(['id', '=', Auth::user()->id])->get(['image', 'phone', 'about', 'name', 'email', 'only_me', 'lastSeen_onlyMe'])[0];
         if ($user->only_me == 'yes') {
             $only_me = 'lock';

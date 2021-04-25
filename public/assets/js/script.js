@@ -60,6 +60,17 @@ $(document).on('click', '.emojiIcon', function() {
 
 $(document).on("click", '#span_emoji', function(e) {
     $("#emojiList").toggle();
+    if ($("#emojiList").css('display') == 'block') {
+        $.ajax({
+            type: "POST",
+            url: "/type-status/" + $("#chat_id").val()
+        })
+    } else {
+        $.ajax({
+            type: "POST",
+            url: "/type-status"
+        })
+    }
 })
 
 $("#msg").on("focus", function() {
@@ -284,6 +295,10 @@ $(function() {
 $("#send_msg").submit(function(e) {
     e.preventDefault();
     $("#emojiList").css('display', 'none');
+    $.ajax({
+        type: "POST",
+        url: "/type-status"
+    })
     var form_data = new FormData(this);
 
     // send files

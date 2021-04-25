@@ -19,7 +19,7 @@
                     </form>
                 </div>
                 <div class="remove btn btn-lg btn-primary">
-                    <a id="remove-image" href="javascript:;" onclick="confirm('Do You Want to Remove Your Image')">Remove Photo</a>
+                    <a id="remove-image" href="javascript:;">Remove Photo</a>
                 </div>
             </div>
             <p id="image-error-msg" style="color:red;display:none"></p>
