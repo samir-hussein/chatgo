@@ -194,6 +194,7 @@ class ChangeInfoController
                         $imgName['name'] = str_ireplace($imgName['ext'], 'webp', $imgName['name']);
                     }
                 }
+
                 if ($current_image->image != 'Blank-Avatar.png') {
                     unlink('../public/assets/images/' . $current_image->image);
                 }
@@ -216,8 +217,8 @@ class ChangeInfoController
 
     public function removeImage($request)
     {
-        if (!empty($request->image) && $request->image != '/assets/images/Blank-Avatar.png') {
-            unlink('../public' . $request->image);
+        if (!empty($request->image) && $request->image != 'assets/images/Blank-Avatar.png') {
+            unlink('../public/' . $request->image);
             UserModel::where(['id', '=', Auth::user()->id])->update([
                 'image' => 'Blank-Avatar.png'
             ]);

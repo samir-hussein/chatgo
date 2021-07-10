@@ -17,6 +17,8 @@
                     <form id="form-image" enctype="multipart/form">
                         <input type="file" name="file" id="file" />
                     </form>
+
+
                 </div>
                 <div class="remove btn btn-lg btn-primary">
                     <a id="remove-image" href="javascript:;">Remove Photo</a>
