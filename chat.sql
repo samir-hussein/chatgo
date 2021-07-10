@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 10, 2021 at 10:35 PM
+-- Generation Time: Jul 10, 2021 at 10:45 PM
 -- Server version: 10.4.19-MariaDB
 -- PHP Version: 8.0.7
 
@@ -117,7 +117,10 @@ INSERT INTO `messages` (`id`, `from_user`, `to_user`, `body`, `time`, `chat_id`,
 (526, 24, 17, NULL, '2021-07-10 18:59:31', 73, 'read', 'CG_60e9ee130c32e.png', NULL, NULL, NULL, NULL, 'logo.png'),
 (527, 17, 24, NULL, '2021-07-10 19:01:04', 73, 'read', 'CG_60e9ee7073cc9.wav', NULL, NULL, NULL, 17, NULL),
 (530, 17, 24, 'VLatgP4=', '2021-07-10 20:31:49', 73, 'read', NULL, 'ödmm	[Ôl£É', '­W]GSª3y', 'ý^á»$èx­kíf@æ}', NULL, NULL),
-(531, 24, 17, NULL, '2021-07-10 20:31:58', 73, 'read', 'CG_60ea03bee18c7.wav', NULL, NULL, NULL, NULL, NULL);
+(531, 24, 17, NULL, '2021-07-10 20:31:58', 73, 'read', 'CG_60ea03bee18c7.wav', NULL, NULL, NULL, NULL, NULL),
+(532, 24, 17, '3uSQwukvO2Y=', '2021-07-10 20:42:19', 73, 'read', NULL, 'h&Ï\Z­ôÝ¸ÞÅå', 'e:Ë1ªÊ§', '½¨b á_¤]_¡`', NULL, NULL),
+(533, 24, 17, NULL, '2021-07-10 20:42:25', 73, 'read', 'CG_60ea063183525.wav', NULL, NULL, NULL, 17, NULL),
+(534, 17, 24, NULL, '2021-07-10 20:43:36', 73, 'read', 'CG_60ea0678ef4ee.wav', NULL, NULL, NULL, 24, NULL);
 
 -- --------------------------------------------------------
 
@@ -146,11 +149,11 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `phone`, `image`, `password`, `role`, `status`, `only_me`, `about`, `lastSeen_onlyMe`, `is_type`, `is_recording`) VALUES
-(17, 'samir ebrahim', 'admin2@admin.com', '01020203477', 'user_profile60ea03ac5da4d.webp', '$2y$10$IPsURMOm8zJ/PO2lcQ4iOe0GYwwC8uQ5AJ7MJD34TNQxOgnvimuL.', NULL, '2021-07-10 22:33 pm', 'no', 'this is pio', 'no', NULL, NULL),
+(17, 'samir ebrahim', 'admin2@admin.com', '01020203477', 'user_profile60ea06639d94a.webp', '$2y$10$IPsURMOm8zJ/PO2lcQ4iOe0GYwwC8uQ5AJ7MJD34TNQxOgnvimuL.', NULL, '2021-07-10 22:43 pm', 'no', 'this is pio', 'no', NULL, NULL),
 (18, 'ahmed', 'admin3@admin.com', '01024416335', 'Blank-Avatar.png', '$2y$10$R70xyJCpyS.76fTUrVSbwOiyKhuGeO7Qg7egrChO3OOzuFq.N2qFW', NULL, '2021-04-09 02:17 am', 'yes', 'I\'m Web developer', 'no', NULL, NULL),
 (19, 'amr', 'admin4@admin.com', '01025824254', 'Blank-Avatar.png', '$2y$10$75sKZo5oXiGsF6MxP2l7WerNhjsHt3hZAbvZoEimmHSpi4obivWLC', NULL, '2021-04-09 01:30 am', 'no', NULL, 'no', NULL, NULL),
 (21, 'Chat go', 'chatgo@gmail.com', '01033324218', 'apple-touch-icon.png', '$2y$10$WAp8Tm.5UAQJW.OS8zHmbeLZMGw.jI9WGPYQGynCJahXWJNs7guH2', NULL, '2021-04-04 21:33 pm', 'yes', NULL, 'no', NULL, NULL),
-(24, 'Red Doe', 'samir@example.com', '01144435326', 'user_profile60ea033e3fbe2.webp', '$2y$10$0ikvDXZermcopZV3tSJevefRdpTCK8Hp2rR0orKFaih2yg15euZRO', NULL, 'Active now', 'no', 'ماشى بنور الله ماااااااشى بدعى و اقول يارب', 'no', NULL, NULL),
+(24, 'Red Doe', 'samir@example.com', '01144435326', 'user_profile60ea033e3fbe2.webp', '$2y$10$0ikvDXZermcopZV3tSJevefRdpTCK8Hp2rR0orKFaih2yg15euZRO', NULL, '2021-07-10 22:43 pm', 'no', 'ماشى بنور الله ماااااااشى بدعى و اقول يارب', 'no', NULL, NULL),
 (25, 'Gfbbh Vbjju', 'samirhussein@gmail.com', '653578', 'Blank-Avatar.png', '$2y$10$rGjpKeJnx4vqTOhk8/mpSOgOzBU0wirTlQPt9/3.mq9RKPTWt7zcS', NULL, '2021-04-12 19:28 pm', 'no', NULL, 'no', NULL, NULL);
 
 --
@@ -201,7 +204,7 @@ ALTER TABLE `chat`
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=532;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=535;
 
 --
 -- AUTO_INCREMENT for table `users`
